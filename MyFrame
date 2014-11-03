@@ -1,0 +1,185 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+public class MyFrame extends javax.swing.JFrame {
+
+	int n = 10;
+	int m = 10;
+	int mines = 10;
+	int flags = 0;
+	int streak = 0;
+
+	boolean b = false;
+
+	int x1 = 0;
+	int x2 = 50;
+	int y1 = 0;
+	int y2 = 50;
+	Controller f = new Controller(n, m, mines);
+
+	public void paint(Graphics g) {
+
+		for (int i = 0; i < 10; i++) {
+			g.drawLine(0 + 50 * i, 0 * i, 0 + 50 * i, 500);
+			g.drawLine(0, 500 - 50 * i, 500, 500 - 50 * i);
+		}
+
+		this.addMouseListener(new CustomListener(getGraphics()));
+
+	}
+
+	public MyFrame(String str) {
+
+		super(str);
+		setSize(500, 500);
+		setVisible(true);
+		b = true;
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+	}
+
+	public class CustomListener implements MouseListener {
+		Graphics tmp;
+
+		CustomListener(Graphics g) {
+			tmp = g;
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			System.out.println(e.getX() + " " + e.getY());
+			Graphics2D g2 = (Graphics2D) tmp;
+			Image flag = Toolkit.getDefaultToolkit().getImage("flag.gif");
+			Image one = Toolkit.getDefaultToolkit().getImage("1.gif");
+			Image two = Toolkit.getDefaultToolkit().getImage("2.gif");
+			Image three = Toolkit.getDefaultToolkit().getImage("3.gif");
+			Image four = Toolkit.getDefaultToolkit().getImage("4.gif");
+			Image five = Toolkit.getDefaultToolkit().getImage("5.gif");
+			Image six = Toolkit.getDefaultToolkit().getImage("6.gif");
+			Image seven = Toolkit.getDefaultToolkit().getImage("7.gif");
+			Image eight = Toolkit.getDefaultToolkit().getImage("8.gif");
+			Image mine = Toolkit.getDefaultToolkit().getImage("mine.gif");
+
+			if (e.getButton() == MouseEvent.BUTTON3) {// pravaya
+
+				// tmp.fillRect((e.getX()/50 )*50, (e.getY()/50)*50, 50, 50);
+				// f.flag(i, j);
+
+				if (f.mas[e.getX() / 50][e.getY() / 50][3] == 1) {
+					tmp.fillRect((e.getX() / 50) * 50, (e.getY() / 50) * 50,
+							50, 50);
+					f.mas[e.getX() / 50][e.getY() / 50][3] = 0;
+					f.mas[e.getX() / 50][e.getY() / 50][2] = 0;
+					flags--;
+					streak--;
+
+				} else {
+
+					if ((f.mas[e.getX() / 50][e.getY() / 50][3] == 0)
+							&& ((f.mas[e.getX() / 50][e.getY() / 50][2] == 0))
+							&& (flags != mines)) {
+						g2.drawImage(flag, (e.getX() / 50) * 50,
+								(e.getY() / 50) * 50, 50, 50, null);
+						g2.finalize();
+						f.mas[e.getX() / 50][e.getY() / 50][3] = 1;
+						f.mas[e.getX() / 50][e.getY() / 50][2] = 1;
+						flags++;
+						streak += f.proverkaWin(streak, e.getX() / 50,
+								e.getY() / 50) ? 1 : 0;
+						
+						if (streak == mines) {
+							System.out.println("U WINNER");
+						}
+					}
+				}
+			}
+
+			if (e.getButton() == MouseEvent.BUTTON1) {// levaya
+
+				if (f.proverkaMine(e.getX() / 50, e.getY() / 50)) {
+					for (int i = 0; i < m; i++) {
+						for (int j = 0; j < m; j++) {
+							if (f.proverkaMine(i, j)) {
+								g2.drawImage(mine, i * 50, j * 50, 50, 50, null);
+							}
+
+						}
+					}
+					System.out.println("U LOSeR");
+				}
+
+				for (int i = 0; i < m; i++) {
+					for (int j = 0; j < m; j++) {
+
+						int a = f.cifr(i, j);
+						if (a == 1) {
+							g2.drawImage(one, i * 50, j * 50, 50, 50, null);
+							f.mas[i][j][2] = 1;
+						}
+						if (a == 2) {
+							g2.drawImage(two, i * 50, j * 50, 50, 50, null);
+							f.mas[i][j][2] = 1;
+						}
+						if (a == 3) {
+							g2.drawImage(three, i * 50, j * 50, 50, 50, null);
+							f.mas[i][j][2] = 1;
+						}
+						if (a == 4) {
+							f.mas[i][j][2] = 1;
+							g2.drawImage(four, i * 50, j * 50, 50, 50, null);
+						}
+						if (a == 5) {
+							f.mas[i][j][2] = 1;
+							g2.drawImage(five, i * 50, j * 50, 50, 50, null);
+						}
+						if (a == 6) {
+							f.mas[i][j][2] = 1;
+							g2.drawImage(six, i * 50, j * 50, 50, 50, null);
+						}
+						if (a == 7) {
+							f.mas[i][j][2] = 1;
+							g2.drawImage(seven, i * 50, j * 50, 50, 50, null);
+						}
+						if (a == 8) {
+							f.mas[i][j][2] = 1;
+							g2.drawImage(eight, i * 50, j * 50, 50, 50, null);
+						}
+						g2.finalize();
+
+					}
+				}
+			}
+
+		}
+
+		// остальные методы
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+	}
+}
