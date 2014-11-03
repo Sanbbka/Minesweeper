@@ -1,0 +1,135 @@
+public class Controller {
+
+	// int mas[][][];// = new int[n][m][4];// 0-пустой, 1 - бомба, 2 - флажок 3
+	// -
+	// otkrbIta ili net
+
+	int mas[][][] = new int[10][10][4];
+
+	Controller(int n, int m, int mines) {
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				mas[i][j][1] = 0;
+				mas[i][j][0] = 0;
+				System.out.println(mas[i][j][1]);
+			}
+		}
+		RandomMin(mines, mas, n, m);
+		metki(mas, m, n);
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				System.out.print(mas[i][j][0]);
+			}
+			System.out.println();
+		}
+		System.out.println();
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				System.out.print(mas[i][j][1]);
+			}
+			System.out.println();
+		}
+	}
+
+	public boolean proverkaMine(int i, int j) {// крч проверяет есть ли в этих
+												// координатах мина
+		return mas[i][j][1] == 1;
+
+	}
+
+	public boolean proverkaWin(int streak, int i, int j) {
+
+		return provFl(i, j) && proverkaMine(i, j);
+
+	}
+
+	public boolean provFl(int i, int j) {// nalichie flaga
+
+		return mas[i][j][2] == 1;
+
+	}
+
+	public int cifr(int i, int j) {// vozvrashaet kol-vo min y kletki
+
+		return mas[i][j][0];
+
+	}
+
+	public boolean visible(int i, int j) {// otkrbiBal li polz
+		return mas[i][j][3] == 1;
+	}
+
+	public void RandomMin(int mines, int mas[][][], int m, int n) {// random ept
+		int i1;
+		int j2;
+		for (int i = 0; i < mines; i++) {
+			i1 = (int) (Math.random() * m);
+			j2 = (int) (Math.random() * n);
+
+			if (mas[i1][j2][1] == 0) {
+				mas[i1][j2][1] = 1;
+			}
+		}
+	}
+
+	public void metki(int mas[][][], int m, int n) {// razmetim pole krch
+													// popipaemcya realiz
+													// volnovoy alg
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < n; j++) {
+				if (mas[i][j][1] == 1)
+					continue;
+				if ((i > 0) && (i < m - 1) && (j > 0) && (j < m - 1)) {
+					int count = 0;
+					count += mas[i - 1][j - 1][1] == 1 ? 1 : 0;
+					count += mas[i + 1][j][1] == 1 ? 1 : 0;
+					count += mas[i + 1][j + 1][1] == 1 ? 1 : 0;
+					count += mas[i][j + 1][1] == 1 ? 1 : 0;
+					count += mas[i - 1][j + 1][1] == 1 ? 1 : 0;
+					count += mas[i - 1][j][1] == 1 ? 1 : 0;
+					count += mas[i + 1][j - 1][1] == 1 ? 1 : 0;
+					count += mas[i][j - 1][1] == 1 ? 1 : 0;
+					mas[i][j][0] = count;
+					System.out.println("count=" + count);
+				} else {
+					int count = 0;
+
+					if ((i + 1 > m)) {
+						count += mas[i + 1][j][1] == 1 ? 1 : 0;
+					}
+
+					if (i - 1 >= 0) {
+						count += mas[i - 1][j][1] == 1 ? 1 : 0;
+					}
+
+					if ((j + 1 <= n - 1)) {
+						count += mas[i][j + 1][1] == 1 ? 1 : 0;
+					}
+
+					if (j - 1 >= 0) {
+						count += mas[i][j - 1][1] == 1 ? 1 : 0;
+					}
+
+					if ((i + 1 < m) && (j + 1 < n)) {
+						count += mas[i + 1][j + 1][1] == 1 ? 1 : 0;
+					}
+
+					if (((i - 1) * (j + 1) >= 0) && (j + 1 < m)) {
+						count += mas[i - 1][j + 1][1] == 1 ? 1 : 0;
+					}
+					if ((i > 0) && (j > 0)) {
+						count += mas[i - 1][j - 1][1] == 1 ? 1 : 0;
+					}
+					if (((i + 1) * (j - 1) >= 0) && (i + 1 < m)) {
+						count += mas[i + 1][j - 1][1] == 1 ? 1 : 0;
+					}
+					mas[i][j][0] = count;
+
+				}
+
+			}
+		}
+	}
+
+}
