@@ -1,4 +1,4 @@
-import java.awt.Color;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -6,15 +6,19 @@ import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.JOptionPane;
+
+
 public class MyFrame extends javax.swing.JFrame {
 
+	int x = -1;
 	int n = 10;
 	int m = 10;
 	int mines = 10;
 	int flags = 0;
 	int streak = 0;
 
-	boolean b = false;
+	//boolean b = false;
 
 	int x1 = 0;
 	int x2 = 50;
@@ -38,14 +42,15 @@ public class MyFrame extends javax.swing.JFrame {
 		super(str);
 		setSize(500, 500);
 		setVisible(true);
-		b = true;
+		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 	}
 
 	public class CustomListener implements MouseListener {
 		Graphics tmp;
-
+		
+		
 		CustomListener(Graphics g) {
 			tmp = g;
 		}
@@ -64,13 +69,15 @@ public class MyFrame extends javax.swing.JFrame {
 			Image seven = Toolkit.getDefaultToolkit().getImage("7.gif");
 			Image eight = Toolkit.getDefaultToolkit().getImage("8.gif");
 			Image mine = Toolkit.getDefaultToolkit().getImage("mine.gif");
+			Image newgame = Toolkit.getDefaultToolkit().getImage("new game.gif");
 
+			
 			if (e.getButton() == MouseEvent.BUTTON3) {// pravaya
-
+				
 				// tmp.fillRect((e.getX()/50 )*50, (e.getY()/50)*50, 50, 50);
 				// f.flag(i, j);
 
-				if (f.mas[e.getX() / 50][e.getY() / 50][3] == 1) {
+				if ((f.mas[e.getX() / 50][e.getY() / 50][3] == 1)&&(f.mas[e.getX() / 50][e.getY() / 50][2]==1)) {
 					tmp.fillRect((e.getX() / 50) * 50, (e.getY() / 50) * 50,
 							50, 50);
 					f.mas[e.getX() / 50][e.getY() / 50][3] = 0;
@@ -82,18 +89,43 @@ public class MyFrame extends javax.swing.JFrame {
 
 					if ((f.mas[e.getX() / 50][e.getY() / 50][3] == 0)
 							&& ((f.mas[e.getX() / 50][e.getY() / 50][2] == 0))
-							&& (flags != mines)) {
+							&& (flags < mines)) {
 						g2.drawImage(flag, (e.getX() / 50) * 50,
 								(e.getY() / 50) * 50, 50, 50, null);
-						g2.finalize();
+					//	g2.finalize();
 						f.mas[e.getX() / 50][e.getY() / 50][3] = 1;
 						f.mas[e.getX() / 50][e.getY() / 50][2] = 1;
 						flags++;
 						streak += f.proverkaWin(streak, e.getX() / 50,
 								e.getY() / 50) ? 1 : 0;
 						
-						if (streak == mines) {
+						boolean v = true;
+						for(int i = 0; i < 10; i++){
+							for(int j = 0; j < 10; j++){
+								if(f.mas[i][j][1] == 1){
+									v = f.mas[i][j][2] == 1;
+								}
+								if(!v){
+									break;
+								}
+							}
+							if(!v){
+								break;
+							}
+						}
+						if (v) {
 							System.out.println("U WINNER");
+							Frame frame = new Frame("ff");
+							JOptionPane.showMessageDialog(frame, "U WIN");
+							
+							g2.clearRect(0, 0, 500, 500);
+							for (int i = 0; i < 10; i++) {
+								g2.drawLine(0 + 50 * i, 0 * i, 0 + 50 * i, 500);
+								g2.drawLine(0, 500 - 50 * i, 500, 500 - 50 * i);
+							}
+							f = new Controller(10,10,10);
+							flags = 0;
+							streak = 0;
 						}
 					}
 				}
@@ -106,54 +138,114 @@ public class MyFrame extends javax.swing.JFrame {
 						for (int j = 0; j < m; j++) {
 							if (f.proverkaMine(i, j)) {
 								g2.drawImage(mine, i * 50, j * 50, 50, 50, null);
+						//		g2.finalize();
 							}
 
 						}
 					}
+					Frame frame = new Frame("ff");
+					JOptionPane.showMessageDialog(frame, "U LOSE");
+					
+					g2.clearRect(0, 0, 500, 500);
+					for (int i = 0; i < 10; i++) {
+						g2.drawLine(0 + 50 * i, 0 * i, 0 + 50 * i, 500);
+						g2.drawLine(0, 500 - 50 * i, 500, 500 - 50 * i);
+					}
+					f = new Controller(10,10,10);
 					System.out.println("U LOSeR");
+					flags = 0;
+					streak = 0;
+					
 				}
+				
+					
 
-				for (int i = 0; i < m; i++) {
-					for (int j = 0; j < m; j++) {
+						boolean b = true;
+						boolean i1 = true;
+						boolean j1 = false;
+						boolean mi = true;
+						int i = e.getX()/50;
+						int j = e.getY()/50;
+						
+						int c = 1;
+						int count = 2;//3
 
-						int a = f.cifr(i, j);
-						if (a == 1) {
-							g2.drawImage(one, i * 50, j * 50, 50, 50, null);
-							f.mas[i][j][2] = 1;
+						while (b) {
+							if(count%4==0)c++;
+							count++;
+							if(c==50) break;
+							for (int t = 0; t < c; t++) {
+								
+								
+								if ((i >= 0) && (i < m)&&(j < m)&&(j>=0)) {
+									// suda cod otkrutie yacheek
+									b = f.mas[i][j][1] != 1;
+									if(f.mas[i][j][2] == 1){
+										flags--;
+									//	f.mas[i][j][2] = 0;
+									}
+									if(!b)break;
+									int a = f.cifr(i, j);
+									if(a==0){
+										g2.drawImage(newgame, i*50, j*50, 50, 50, null);
+										f.mas[i][j][3] = 1;
+									}
+									if (a == 1) {
+										g2.drawImage(one, i * 50, j * 50, 50, 50, null);
+										f.mas[i][j][3] = 1;
+									}
+									if (a == 2) {
+										g2.drawImage(two, i * 50, j * 50, 50, 50, null);
+										f.mas[i][j][3] = 1;
+									}
+									if (a == 3) {
+										g2.drawImage(three, i * 50, j * 50, 50, 50, null);
+										f.mas[i][j][3] = 1;
+									}
+									if (a == 4) {
+										f.mas[i][j][3] = 1;
+										g2.drawImage(four, i * 50, j * 50, 50, 50, null);
+									}
+									if (a == 5) {
+										f.mas[i][j][3] = 1;
+										g2.drawImage(five, i * 50, j * 50, 50, 50, null);
+									}
+									if (a == 6) {
+										f.mas[i][j][3] = 1;
+										g2.drawImage(six, i * 50, j * 50, 50, 50, null);
+									}
+									if (a == 7) {
+										f.mas[i][j][3] = 1;
+										g2.drawImage(seven, i * 50, j * 50, 50, 50, null);
+									}
+									if (a == 8) {
+										f.mas[i][j][3] = 1;
+										g2.drawImage(eight, i * 50, j * 50, 50, 50, null);
+									}
+
+								}
+								if (count % 4 == 0) {
+									i++;
+								}
+								if(count%4 == 1){
+									j++;
+								}
+								if(count%4 == 2){
+									i--;
+								}
+								if(count%4 == 3){
+									j--;
+								}
+
+							}
+
+						
 						}
-						if (a == 2) {
-							g2.drawImage(two, i * 50, j * 50, 50, 50, null);
-							f.mas[i][j][2] = 1;
-						}
-						if (a == 3) {
-							g2.drawImage(three, i * 50, j * 50, 50, 50, null);
-							f.mas[i][j][2] = 1;
-						}
-						if (a == 4) {
-							f.mas[i][j][2] = 1;
-							g2.drawImage(four, i * 50, j * 50, 50, 50, null);
-						}
-						if (a == 5) {
-							f.mas[i][j][2] = 1;
-							g2.drawImage(five, i * 50, j * 50, 50, 50, null);
-						}
-						if (a == 6) {
-							f.mas[i][j][2] = 1;
-							g2.drawImage(six, i * 50, j * 50, 50, 50, null);
-						}
-						if (a == 7) {
-							f.mas[i][j][2] = 1;
-							g2.drawImage(seven, i * 50, j * 50, 50, 50, null);
-						}
-						if (a == 8) {
-							f.mas[i][j][2] = 1;
-							g2.drawImage(eight, i * 50, j * 50, 50, 50, null);
-						}
-						g2.finalize();
+			//			g2.finalize();
 
 					}
-				}
-			}
+				
+			
 
 		}
 
@@ -182,4 +274,5 @@ public class MyFrame extends javax.swing.JFrame {
 
 		}
 	}
+	
 }
