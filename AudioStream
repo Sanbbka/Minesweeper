@@ -1,0 +1,34 @@
+
+import java.io.File;
+import java.io.IOException;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.JLayer;
+
+import org.w3c.dom.stylesheets.MediaList;
+
+public class AudioStream {
+
+	public static void main(String[] args) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
+		
+		File audioFile = new File("C:/lol.mp3");
+		if( audioFile.exists() ){
+			System.out.println("zbs");
+		}
+		AudioInputStream ais = AudioSystem.getAudioInputStream(audioFile);
+		
+		Clip clip = AudioSystem.getClip();
+		
+		clip.open(ais);
+		clip.setFramePosition(0);
+		clip.start();
+		Thread.sleep(clip.getMicrosecondLength()/1000);
+		clip.stop();
+		clip.close();
+	}
+
+}
